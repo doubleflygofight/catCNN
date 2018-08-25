@@ -1,9 +1,7 @@
-1. download https://github.com/wenbinc-Bin/dogCNN.git to local
-
-2. download https://github.com/doubleflygofight/dogCNN.git to localdisk
+1. download https://github.com/doubleflygofight/catCNN.git to localdisk
    user/password:doubleflygofight/tina900128
 
-3. modify caffe binary path in all *.sh file of step 2 repository
+2. modify caffe binary path in all *.sh file of step 2 repository
 file list:
 -rwxr-xr-x 1 root root 146 Aug 19 10:24 caffe_continue.sh
 -rwxr-xr-x 1 root root 102 Aug 19 10:24 caffe_train.sh
@@ -14,13 +12,13 @@ file list:
 modify content:
 modify "/root/caffe/build/tools/" to real path of caffe's binary file
 
-4. copy all files in step2 repository to step 1 repository(cover copy)
+3. copy all files in step2 repository to step 1 repository(cover copy)
 
-5. delete following dir in step 1 repository before execute
+4. delete following dir in step 1 repository before execute
    rm -rf mtrainldb/
    rm -rf mvalldb/
 
-6.. run the following command in order of step 1 repository
+5. run the following command in order of step 1 repository
    - convert_trainset.sh
    - convert_valset.sh
    - computeMean.sh
