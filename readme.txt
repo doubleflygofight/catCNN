@@ -1,32 +1,50 @@
-1. download https://github.com/doubleflygofight/catCNN.git to localdisk
-   user/password:doubleflygofight/tina900128
+1. tensorflow download and install
+   https://github.com/tensorflow/models.git
+   
+   #models/research 
+   python setup.py
+   
+   #research/object_detection/g3doc/
+   #according to installation.md, install and test the installation
+   
 
-2. modify caffe binary path in all *.sh file of step 2 repository
-file list:
--rwxr-xr-x 1 root root 146 Aug 19 10:24 caffe_continue.sh
--rwxr-xr-x 1 root root 102 Aug 19 10:24 caffe_train.sh
--rwxr-xr-x 1 root root 117 Aug 19 10:24 computeMean.sh
--rwxr-xr-x 1 root root 149 Aug 19 10:24 convert_trainset.sh
--rwxr-xr-x 1 root root 143 Aug 19 10:24 convert_valset.sh
+2. download dataset and annotations
+   # From tensorflow/models/research/
+	wget http://www.robots.ox.ac.uk/~vgg/data/pets/data/images.tar.gz
+	wget http://www.robots.ox.ac.uk/~vgg/data/pets/data/annotations.tar.gz
+	tar -xvf images.tar.gz
+	tar -xvf annotations.tar.gz
+	
+	#After downloading the tarballs, your tensorflow/models/research/ directory should appear as follows:
+	- images.tar.gz
+	- annotations.tar.gz
+	+ images/
+	+ annotations/
+	+ object_detection/
+	... other files and directories
+  
+3. convert from the raw Oxford-IIIT Pet dataset into TFRecords
+	# From tensorflow/models/research/
+	python object_detection/dataset_tools/create_pet_tf_record.py \
+    --label_map_path=object_detection/data/pet_label_map.pbtxt \
+    --data_dir=`pwd` \
+    --output_dir=`pwd`
 
-modify content:
-modify "/root/caffe/build/tools/" to real path of caffe's binary file
+4.  modify the configuration of the alogrithm
+	such as object_detection/samples/configs/faster_rcnn_resnet101_pets.config
 
-3. copy all files in step2 repository to step 1 repository(cover copy)
+5.  train the dataset to get your own model
+	#modify the parameter of "PATH_TO_BE_CONFIGURED"
+	#comment the fine_tune_checkpoint
+	#adjust the num_steps parameter
+	mkdir tf_ckpt
+	python object_detection/legacy/train.py --logtostderr --pipeline_config_path=object_detection/samples/configs/faster_rcnn_resnet101_pets.config --train_dir=./tf_ckpt
 
-4. delete following dir in step 1 repository before execute
-   rm -rf mtrainldb/
-   rm -rf mvalldb/
-
-5. run the following command in order of step 1 repository
-   - convert_trainset.sh
-   - convert_valset.sh
-   - computeMean.sh
-   - caffe_train.sh  -- no base model
-     or caffe_continue.sh -- with base model
-
-
-note: premise of "use base model" : 
-      download http://dl.caffe.berkeleyvision.org/bvlc_reference_caffenet.caffemodel to step 1 rep
-
+6.  eval the model using the same dataset
+	python object_detection/legacy/eval.py --logtostderr --pipeline_config_path=object_detection/samples/configs/faster_rcnn_resnet101_pets.config --eval_dir=./eval --checkpoint_dir=./tf_ckpt 
+	 
+Notice
+1. How the tensorflow find the images it needs?
+   from create_pet_tf_record.py use "image_dir"(--data_dir+"images") + "filename" of xml find the pictures
+   "folder" applies to create_pascal_tf_record.py script
 
